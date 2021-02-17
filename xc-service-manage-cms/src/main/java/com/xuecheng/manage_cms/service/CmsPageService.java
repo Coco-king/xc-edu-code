@@ -1,8 +1,10 @@
 package com.xuecheng.manage_cms.service;
 
+import com.alibaba.fastjson.JSON;
 import com.mongodb.client.gridfs.GridFSDownloadStream;
 import com.mongodb.client.gridfs.model.GridFSFile;
 import com.xuecheng.framework.domain.cms.CmsPage;
+import com.xuecheng.framework.domain.cms.CmsSite;
 import com.xuecheng.framework.domain.cms.CmsTemplate;
 import com.xuecheng.framework.domain.cms.request.QueryPageRequest;
 import com.xuecheng.framework.domain.cms.response.CmsCode;
@@ -13,6 +15,7 @@ import com.xuecheng.framework.model.response.QueryResponseResult;
 import com.xuecheng.framework.model.response.QueryResult;
 import com.xuecheng.framework.model.response.ResponseResult;
 import com.xuecheng.manage_cms.base.CmsBaseService;
+import com.xuecheng.manage_cms.config.RabbitMQConfig;
 import freemarker.cache.StringTemplateLoader;
 import freemarker.template.Configuration;
 import freemarker.template.Template;
@@ -20,6 +23,7 @@ import lombok.SneakyThrows;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.bson.types.ObjectId;
 import org.springframework.data.domain.Example;
 import org.springframework.data.domain.ExampleMatcher;
 import org.springframework.data.domain.Page;
@@ -32,7 +36,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.ui.freemarker.FreeMarkerTemplateUtils;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -170,16 +176,6 @@ public class CmsPageService extends CmsBaseService {
     }
 
     @SneakyThrows
-    private String generateHtml(String pageTemplate, Map model) {
-        Configuration configuration = new Configuration(Configuration.getVersion());
-        StringTemplateLoader templateLoader = new StringTemplateLoader();
-        templateLoader.putTemplate("template", pageTemplate);
-        configuration.setTemplateLoader(templateLoader);
-        Template template = configuration.getTemplate("template");
-        return FreeMarkerTemplateUtils.processTemplateIntoString(template, model);
-    }
-
-    @SneakyThrows
     public String getPageTemplate(String templateFileId) {
         if (StringUtils.isBlank(templateFileId)) ExceptionCast.cast(CmsCode.CMS_GENERATEHTML_TEMPLATENOTFOUND);
         GridFSFile file = gridFsTemplate.findOne(Query.query(Criteria.where("_id").is(templateFileId)));
@@ -190,6 +186,57 @@ public class CmsPageService extends CmsBaseService {
         return IOUtils.toString(resource.getInputStream(), StandardCharsets.UTF_8);
     }
 
+    /**
+     * 发布页面
+     */
+    @SneakyThrows
+    public ResponseResult post(String pageId) {
+        //执行静态化
+        String pageHtml = getPageHtml(pageId);
+        if (StringUtils.isBlank(pageHtml)) ExceptionCast.cast(CmsCode.CMS_GENERATEHTML_HTMLISNULL);
+        //获取页面信息
+        Optional<CmsPage> optional = cmsPageRepository.findById(pageId);
+        if (!optional.isPresent()) ExceptionCast.cast(CommonCode.INVALID_PARAM);
+        CmsPage cmsPage = optional.get();
+        String htmlFileId = cmsPage.getHtmlFileId();
+        //把页面保存到GridFS中，保存前先删除
+        if (StringUtils.isNotBlank(htmlFileId)) {
+            gridFsTemplate.delete(Query.query(Criteria.where("_id").is(htmlFileId)));
+        }
+        InputStream content = IOUtils.toInputStream(pageHtml, "utf-8");
+        ObjectId objectId = gridFsTemplate.store(content, cmsPage.getPageName());
+        cmsPage.setHtmlFileId(objectId.toHexString());
+        cmsPageRepository.save(cmsPage);
+        //获取站点信息
+        Optional<CmsSite> site = cmsSiteRepository.findById(cmsPage.getSiteId());
+        if (!site.isPresent()) ExceptionCast.cast(CmsCode.CMS_GENERATEHTML_SITENOTFOUND);
+        //拼装消息内容
+        Map<String, String> msg = new HashMap<>();
+        msg.put("pageId", pageId);
+        //转为json
+        String jsonString = JSON.toJSONString(msg);
+        //发送消息到mq队列
+        rabbitTemplate.convertAndSend(RabbitMQConfig.EX_ROUTING_CMS_POSTPAGE, site.get().getSiteId(), jsonString);
+        content.close();
+        return ResponseResult.SUCCESS();
+    }
+
+    /**
+     * 页面静态化，绑定数据模型和模板实现页面静态化
+     */
+    @SneakyThrows
+    private String generateHtml(String pageTemplate, Map model) {
+        Configuration configuration = new Configuration(Configuration.getVersion());
+        StringTemplateLoader templateLoader = new StringTemplateLoader();
+        templateLoader.putTemplate("template", pageTemplate);
+        configuration.setTemplateLoader(templateLoader);
+        Template template = configuration.getTemplate("template");
+        return FreeMarkerTemplateUtils.processTemplateIntoString(template, model);
+    }
+
+    /**
+     * 获取模板的数据模型
+     */
     private Map getTemplateModel(CmsPage cmsPage) {
         String dataUrl = cmsPage.getDataUrl();
         if (StringUtils.isBlank(dataUrl)) ExceptionCast.cast(CmsCode.CMS_GENERATEHTML_DATAURLISNULL);
@@ -198,5 +245,4 @@ public class CmsPageService extends CmsBaseService {
         if (body == null) ExceptionCast.cast(CmsCode.CMS_GENERATEHTML_DATAISNULL);
         return body;
     }
-
 }

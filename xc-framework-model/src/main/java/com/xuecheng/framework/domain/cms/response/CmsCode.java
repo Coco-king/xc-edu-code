@@ -16,6 +16,7 @@ public enum CmsCode implements ResultCode {
     CMS_GENERATEHTML_SAVEHTMLERROR(false, 24005, "保存静态html出错！"),
     CMS_GENERATEHTML_HTMLNOTFOUND(false, 24006, "页面找不到！"),
     CMS_GENERATEHTML_TEMPLATENOTFOUND(false, 24007, "页面模板找不到！"),
+    CMS_GENERATEHTML_SITENOTFOUND(false, 24008, "页面站点找不到！"),
     CMS_COURSE_PERVIEWISNULL(false, 24020, "预览页面为空！");
     //操作代码
     boolean success;

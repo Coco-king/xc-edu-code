@@ -60,4 +60,13 @@ public class CmsPageController extends CmsBaseController implements CmsPageContr
     public ResponseResult delete(@PathVariable("id") String id) {
         return cmsPageService.delete(id);
     }
+
+    /**
+     * 发布页面
+     */
+    @Override
+    @PostMapping("/postPage/{id}")
+    public ResponseResult post(@PathVariable("id") String id) {
+        return cmsPageService.post(id);
+    }
 }
