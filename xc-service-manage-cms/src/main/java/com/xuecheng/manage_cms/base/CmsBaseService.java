@@ -1,10 +1,7 @@
 package com.xuecheng.manage_cms.base;
 
 import com.mongodb.client.gridfs.GridFSBucket;
-import com.xuecheng.manage_cms.dao.CmsConfigRepository;
-import com.xuecheng.manage_cms.dao.CmsPageRepository;
-import com.xuecheng.manage_cms.dao.CmsSiteRepository;
-import com.xuecheng.manage_cms.dao.CmsTemplateRepository;
+import com.xuecheng.manage_cms.dao.*;
 import com.xuecheng.manage_cms.service.CmsPageService;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,4 +27,6 @@ public class CmsBaseService {
     protected CmsConfigRepository cmsConfigRepository;
     @Autowired
     protected CmsPageService cmsPageService;
+    @Autowired
+    protected SysDictionaryRepository sysDictionaryRepository;
 }

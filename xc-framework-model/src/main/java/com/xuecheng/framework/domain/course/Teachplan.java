@@ -13,7 +13,7 @@ import java.io.Serializable;
 @Data
 @ToString
 @Entity
-@Table(name="teachplan")
+@Table(name = "teachplan")
 @GenericGenerator(name = "jpa-uuid", strategy = "uuid")
 public class Teachplan implements Serializable {
     private static final long serialVersionUID = -916357110051689485L;

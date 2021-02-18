@@ -8,8 +8,8 @@ import org.springframework.context.annotation.ComponentScan;
 @SpringBootApplication
 @EntityScan({"com.xuecheng.framework.domain.cms"})
 @ComponentScan({"com.xuecheng.framework", "com.xuecheng.manage_cms_client"})
-public class CmsManageClientApplication {
+public class ManageCmsClientApplication {
     public static void main(String[] args) {
-        SpringApplication.run(CmsManageClientApplication.class, args);
+        SpringApplication.run(ManageCmsClientApplication.class, args);
     }
 }

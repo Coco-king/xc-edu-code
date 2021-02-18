@@ -1,6 +1,7 @@
 package com.xuecheng.manage_course.dao;
 
 import com.xuecheng.framework.domain.course.CourseBase;
+import com.xuecheng.framework.domain.course.ext.TeachplanNode;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,6 +22,8 @@ public class TestDao {
     CourseBaseRepository courseBaseRepository;
     @Autowired
     CourseMapper courseMapper;
+    @Autowired
+    TeachplanMapper teachplanMapper;
 
     @Test
     public void testCourseBaseRepository() {
@@ -35,5 +38,11 @@ public class TestDao {
     public void testCourseMapper() {
         CourseBase courseBase = courseMapper.findCourseBaseById("402885816240d276016240f7e5000002");
         System.out.println(courseBase);
+    }
+
+    @Test
+    public void testTeachplanMapper() {
+        TeachplanNode list = teachplanMapper.findTeachplanList("4028e581617f945f01617f9dabc40000");
+        System.out.println(list);
     }
 }
