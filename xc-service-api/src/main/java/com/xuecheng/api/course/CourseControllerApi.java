@@ -2,6 +2,7 @@ package com.xuecheng.api.course;
 
 import com.xuecheng.framework.domain.course.CourseBase;
 import com.xuecheng.framework.domain.course.CourseMarket;
+import com.xuecheng.framework.domain.course.CoursePic;
 import com.xuecheng.framework.domain.course.Teachplan;
 import com.xuecheng.framework.domain.course.ext.TeachplanNode;
 import com.xuecheng.framework.domain.course.request.CourseListRequest;
@@ -12,6 +13,8 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
+
+import java.util.List;
 
 @Api(tags = "课程管理接口，提供课程的增、删、改、查")
 public interface CourseControllerApi {
@@ -55,4 +58,14 @@ public interface CourseControllerApi {
             @ApiImplicitParam(name = "courseId", value = "课程ID", required = true, paramType = "path", dataType = "String")
     })
     ResponseResult updateCourseMarket(String courseId, CourseMarket courseMarket);
+
+    @ApiOperation("添加图片与课程的关联关系")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "courseId", value = "课程ID", required = true, paramType = "query", dataType = "String"),
+            @ApiImplicitParam(name = "pic", value = "课程对应图片的路径", required = true, paramType = "query", dataType = "String")
+    })
+    ResponseResult addCoursePic(String courseId, String pic);
+
+    @ApiImplicitParam(name = "courseId", value = "课程ID", required = true, paramType = "path", dataType = "String")
+    List<CoursePic> findCoursePicsByCourseId(String courseId);
 }

@@ -4,6 +4,7 @@ import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import com.xuecheng.framework.domain.course.CourseBase;
 import com.xuecheng.framework.domain.course.CourseMarket;
+import com.xuecheng.framework.domain.course.CoursePic;
 import com.xuecheng.framework.domain.course.Teachplan;
 import com.xuecheng.framework.domain.course.ext.CourseInfo;
 import com.xuecheng.framework.domain.course.ext.TeachplanNode;
@@ -175,5 +176,27 @@ public class CourseService extends CourseBaseService {
             courseMarketRepository.save(courseMarket);
         }
         return ResponseResult.SUCCESS();
+    }
+
+    @Transactional
+    public ResponseResult saveCoursePic(String courseId, String pic) {
+        if (StringUtils.isBlank(courseId))
+            ExceptionCast.cast(CourseCode.COURSE_PUBLISH_COURSEIDISNULL);
+        if (StringUtils.isBlank(pic))
+            ExceptionCast.cast(CourseCode.COURSE_PUBLISH_COURSEWITHPICISNULL);
+        CoursePic coursePic = new CoursePic();
+        coursePic.setCourseid(courseId);
+        coursePic.setPic(pic);
+        coursePicRepository.save(coursePic);
+        return ResponseResult.SUCCESS();
+    }
+
+    /**
+     * 根据课程ID查询他所属的图片集合
+     */
+    public List<CoursePic> findCoursePicsByCourseId(String courseId) {
+        if (StringUtils.isBlank(courseId))
+            ExceptionCast.cast(CourseCode.COURSE_PUBLISH_COURSEIDISNULL);
+        return coursePicRepository.findByCourseid(courseId);
     }
 }

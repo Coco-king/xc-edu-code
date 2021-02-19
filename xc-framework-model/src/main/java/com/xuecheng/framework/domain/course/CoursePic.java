@@ -13,13 +13,15 @@ import java.io.Serializable;
 @Data
 @ToString
 @Entity
-@Table(name="course_pic")
-@GenericGenerator(name = "jpa-assigned", strategy = "assigned")
+@Table(name = "course_pic")
+@GenericGenerator(name = "jpa-uuid", strategy = "uuid")
 public class CoursePic implements Serializable {
     private static final long serialVersionUID = -916357110051689486L;
 
     @Id
-    @GeneratedValue(generator = "jpa-assigned")
+    @GeneratedValue(generator = "jpa-uuid")
+    @Column(length = 32)
+    private String id;
     private String courseid;
     private String pic;
 

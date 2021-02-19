@@ -16,4 +16,6 @@ public class CourseBaseService {
     protected CategoryMapper categoryMapper;
     @Autowired
     protected CourseMarketRepository courseMarketRepository;
+    @Autowired
+    protected CoursePicRepository coursePicRepository;
 }

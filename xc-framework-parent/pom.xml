@@ -23,6 +23,7 @@
         <module>../xc-service-manage-cms</module>
         <module>../xc-service-manage-cms-client</module>
         <module>../xc-service-manage-course</module>
+        <module>../xc-service-base-filesystem</module>
     </modules>
 
     <properties>
@@ -46,7 +47,7 @@
         <lombok.version>1.16.16</lombok.version>
         <springfox-swagger.version>2.9.2</springfox-swagger.version>
         <fastjson.version>1.2.30</fastjson.version>
-        <fastdfs-client-java.version>1.27.0.0</fastdfs-client-java.version>
+        <fastdfs-client.version>1.27.2</fastdfs-client.version>
         <mysql-connector-java.version>5.1.40</mysql-connector-java.version>
         <elasticsearch.version>6.2.1</elasticsearch.version>
         <guava.version>24.0-jre</guava.version>
@@ -140,11 +141,10 @@
                 <version>${fastjson.version}</version>
             </dependency>
             <dependency>
-                <groupId>net.oschina.zcx7878</groupId>
-                <artifactId>fastdfs-client-java</artifactId>
-                <version>${fastdfs-client-java.version}</version>
+                <groupId>com.github.tobato</groupId>
+                <artifactId>fastdfs-client</artifactId>
+                <version>${fastdfs-client.version}</version>
             </dependency>
-
             <dependency>
                 <groupId>org.elasticsearch.client</groupId>
                 <artifactId>elasticsearch-rest-high-level-client</artifactId>

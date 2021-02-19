@@ -5,6 +5,7 @@
       <list>
         <option value="$PROJECT_DIR$/xc-framework-parent/pom.xml" />
         <option value="$PROJECT_DIR$/xc-service-manage-course/pom.xml" />
+        <option value="$PROJECT_DIR$/xc-service-base-filesystem/pom.xml" />
       </list>
     </option>
   </component>
