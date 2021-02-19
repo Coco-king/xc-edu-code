@@ -68,4 +68,8 @@ public interface CourseControllerApi {
 
     @ApiImplicitParam(name = "courseId", value = "课程ID", required = true, paramType = "path", dataType = "String")
     List<CoursePic> findCoursePicsByCourseId(String courseId);
+
+    @ApiOperation("删除课程图片")
+    @ApiImplicitParam(name = "pic", value = "图片的ID", required = true, paramType = "query", dataType = "String")
+    ResponseResult deleteCoursePic(String pic);
 }

@@ -1,6 +1,7 @@
 package com.xuecheng.api.filesystem;
 
 import com.xuecheng.framework.domain.filesystem.response.UploadFileResult;
+import com.xuecheng.framework.model.response.ResponseResult;
 import io.swagger.annotations.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -23,4 +24,8 @@ public interface FileSystemControllerApi {
     UploadFileResult upload(
             @ApiParam(name = "file", value = "文件", required = true) MultipartFile file,
             String fileTag, String businessKey, String metadata);
+
+    @ApiOperation("删除文件")
+    @ApiImplicitParam(name = "filePath", value = "图片路径", required = true, paramType = "query", dataType = "String")
+    ResponseResult deletePic(String filePath);
 }

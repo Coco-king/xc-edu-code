@@ -7,4 +7,6 @@ import java.util.List;
 
 public interface CoursePicRepository extends JpaRepository<CoursePic, String> {
     List<CoursePic> findByCourseid(String courseId);
+
+    long deleteByPic(String pic);
 }

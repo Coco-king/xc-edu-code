@@ -8,6 +8,7 @@ import com.xuecheng.framework.domain.filesystem.response.FileSystemCode;
 import com.xuecheng.framework.domain.filesystem.response.UploadFileResult;
 import com.xuecheng.framework.exception.ExceptionCast;
 import com.xuecheng.framework.model.response.CommonCode;
+import com.xuecheng.framework.model.response.ResponseResult;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -61,5 +62,15 @@ public class FileSystemService extends FileBaseService {
             ExceptionCast.cast(FileSystemCode.FS_UPLOADFILE_GETSTREAMFAIL);
         }
         return null;
+    }
+
+    /**
+     * 根据图片ID删除图片
+     */
+    public ResponseResult deletePic(String filePath) {
+        storageClient.deleteFile(filePath);
+        long res = fileSystemRepository.deleteByFilePath(filePath);
+        if (res > 0) return ResponseResult.SUCCESS();
+        return ResponseResult.FAIL();
     }
 }

@@ -199,4 +199,14 @@ public class CourseService extends CourseBaseService {
             ExceptionCast.cast(CourseCode.COURSE_PUBLISH_COURSEIDISNULL);
         return coursePicRepository.findByCourseid(courseId);
     }
+
+    /**
+     * 根据图片与课程对应关系的ID删除课程图片
+     */
+    @Transactional
+    public ResponseResult deleteCoursePic(String pic) {
+        long res = coursePicRepository.deleteByPic(pic);
+        if (res > 0) return ResponseResult.SUCCESS();
+        return ResponseResult.FAIL();
+    }
 }

@@ -84,4 +84,10 @@ public class CourseController extends CourseBaseController implements CourseCont
     public List<CoursePic> findCoursePicsByCourseId(@PathVariable("courseId") String courseId) {
         return courseService.findCoursePicsByCourseId(courseId);
     }
+
+    @Override
+    @DeleteMapping("/coursepic/delete")
+    public ResponseResult deleteCoursePic(@RequestParam("pic") String pic) {
+        return courseService.deleteCoursePic(pic);
+    }
 }

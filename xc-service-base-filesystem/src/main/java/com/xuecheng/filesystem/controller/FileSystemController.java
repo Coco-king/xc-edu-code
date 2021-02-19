@@ -3,10 +3,8 @@ package com.xuecheng.filesystem.controller;
 import com.xuecheng.api.filesystem.FileSystemControllerApi;
 import com.xuecheng.filesystem.base.FileBaseController;
 import com.xuecheng.framework.domain.filesystem.response.UploadFileResult;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import com.xuecheng.framework.model.response.ResponseResult;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 @RestController
@@ -29,5 +27,11 @@ public class FileSystemController extends FileBaseController implements FileSyst
             @RequestParam(value = "businessKey", required = false) String businessKey,
             @RequestParam(value = "metadata", required = false) String metadata) {
         return fileSystemService.upload(file, fileTag, businessKey, metadata);
+    }
+
+    @Override
+    @DeleteMapping("/delete")
+    public ResponseResult deletePic(@RequestParam("filePath") String filePath) {
+        return fileSystemService.deletePic(filePath);
     }
 }
