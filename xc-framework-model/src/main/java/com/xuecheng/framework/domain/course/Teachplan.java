@@ -28,7 +28,7 @@ public class Teachplan implements Serializable {
     private String description;
     private String courseid;
     private String status;
-    private Integer orderby;
+    private String orderby;
     private Double timelength;
     private String trylearn;
 

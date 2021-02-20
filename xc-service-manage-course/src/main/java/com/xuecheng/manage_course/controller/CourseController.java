@@ -5,6 +5,8 @@ import com.xuecheng.framework.domain.course.CourseBase;
 import com.xuecheng.framework.domain.course.CourseMarket;
 import com.xuecheng.framework.domain.course.CoursePic;
 import com.xuecheng.framework.domain.course.Teachplan;
+import com.xuecheng.framework.domain.course.ext.CoursePublishResult;
+import com.xuecheng.framework.domain.course.ext.CourseView;
 import com.xuecheng.framework.domain.course.ext.TeachplanNode;
 import com.xuecheng.framework.domain.course.request.CourseListRequest;
 import com.xuecheng.framework.domain.course.response.AddCourseResult;
@@ -36,6 +38,13 @@ public class CourseController extends CourseBaseController implements CourseCont
     public ResponseResult addTeachplan(@RequestBody Teachplan teachplan) {
         return courseService.addTeachplan(teachplan);
     }
+
+    @Override
+    @DeleteMapping("/teachplan/delete")
+    public ResponseResult deleteCoursePlan(@RequestParam("id") String id) {
+        return courseService.deleteCoursePlan(id);
+    }
+
 
     @Override
     @GetMapping("/coursebase/list/{page}/{size}")
@@ -89,5 +98,17 @@ public class CourseController extends CourseBaseController implements CourseCont
     @DeleteMapping("/coursepic/delete")
     public ResponseResult deleteCoursePic(@RequestParam("pic") String pic) {
         return courseService.deleteCoursePic(pic);
+    }
+
+    @Override
+    @GetMapping("/courseview/{courseId}")
+    public CourseView getCourseView(@PathVariable("courseId") String courseId) {
+        return courseService.getCourseView(courseId);
+    }
+
+    @Override
+    @PostMapping("/preview/{id}")
+    public CoursePublishResult preview(@PathVariable("id") String id) {
+        return courseService.preview(id);
     }
 }

@@ -10,4 +10,6 @@ import java.util.List;
  */
 public interface TeachplanRepository extends JpaRepository<Teachplan, String> {
     List<Teachplan> findByCourseidAndParentid(String courseId, String parentId);
+
+    List<Teachplan> findByParentid(String parentId);
 }

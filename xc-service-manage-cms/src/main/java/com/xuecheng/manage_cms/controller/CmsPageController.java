@@ -69,4 +69,10 @@ public class CmsPageController extends CmsBaseController implements CmsPageContr
     public ResponseResult post(@PathVariable("id") String id) {
         return cmsPageService.post(id);
     }
+
+    @Override
+    @PostMapping("/saveOrUpdate")
+    public CmsPageResult saveOrUpdate(@RequestBody CmsPage cmsPage) {
+        return cmsPageService.saveOrUpdate(cmsPage);
+    }
 }

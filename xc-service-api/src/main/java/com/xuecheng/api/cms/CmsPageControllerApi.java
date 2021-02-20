@@ -42,4 +42,8 @@ public interface CmsPageControllerApi {
     @ApiOperation("发布页面")
     @ApiImplicitParam(name = "id", value = "页面ID", required = true, paramType = "path", dataType = "String")
     ResponseResult post(String id);
+
+    @ApiOperation("新增或修改页面")
+    @ApiImplicitParam(name = "cmsPage", value = "页面对象", required = true, paramType = "body", dataType = "CmsPage")
+    CmsPageResult saveOrUpdate(CmsPage cmsPage);
 }

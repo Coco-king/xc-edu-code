@@ -17,6 +17,7 @@ public class CmsPagePreviewController extends CmsBaseController {
     @GetMapping("/cms/preview/{pageId}")
     public void preview(@PathVariable("pageId") String pageId) {
         String html = cmsPageService.getPageHtml(pageId);
+        response.setHeader("Content-type", "text/html;charset=utf-8");
         response.getOutputStream().write(html.getBytes(StandardCharsets.UTF_8));
     }
 }

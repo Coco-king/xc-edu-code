@@ -20,6 +20,7 @@ public enum CourseCode implements ResultCode {
     COURSE_PUBLISH_COURSENAMEMUSTNOTNULL(false, 31007, "课程名称不能为空！"),
     COURSE_PUBLISH_TIMEISFAIL(false, 31008, "课程结束时间不能小于开始时间！"),
     COURSE_PUBLISH_COURSEWITHPICISNULL(false, 31009, "课程对应的图片路径为空！"),
+    COURSE_PUBLISH_IMGISUNIQUE(false, 310010, "课程只能有一张图片！"),
     COURSE_MEDIS_URLISNULL(false, 31101, "选择的媒资文件访问地址为空！"),
     COURSE_MEDIS_NAMEISNULL(false, 31102, "选择的媒资文件名称为空！");
 

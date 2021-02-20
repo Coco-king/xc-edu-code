@@ -1,5 +1,6 @@
 package com.xuecheng.manage_course.base;
 
+import com.xuecheng.manage_course.client.CmsPageClient;
 import com.xuecheng.manage_course.dao.*;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -18,4 +19,6 @@ public class CourseBaseService {
     protected CourseMarketRepository courseMarketRepository;
     @Autowired
     protected CoursePicRepository coursePicRepository;
+    @Autowired
+    protected CmsPageClient cmsPageClient;
 }

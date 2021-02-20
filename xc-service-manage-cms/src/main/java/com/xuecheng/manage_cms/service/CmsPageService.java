@@ -245,4 +245,16 @@ public class CmsPageService extends CmsBaseService {
         if (body == null) ExceptionCast.cast(CmsCode.CMS_GENERATEHTML_DATAISNULL);
         return body;
     }
+
+    /**
+     * 新增或保存页面
+     */
+    public CmsPageResult saveOrUpdate(CmsPage cmsPage) {
+        //校检页面是否存在
+        CmsPage page = cmsPageRepository.findByPageNameAndSiteIdAndPageWebPath(cmsPage.getPageName(), cmsPage.getSiteId(), cmsPage.getPageWebPath());
+        if (page != null) {
+            return update(page.getPageId(), cmsPage);
+        }
+        return save(cmsPage);
+    }
 }

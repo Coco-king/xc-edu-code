@@ -2,11 +2,15 @@ package com.xuecheng.manage_course.service;
 
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
+import com.xuecheng.framework.domain.cms.CmsPage;
+import com.xuecheng.framework.domain.cms.response.CmsPageResult;
 import com.xuecheng.framework.domain.course.CourseBase;
 import com.xuecheng.framework.domain.course.CourseMarket;
 import com.xuecheng.framework.domain.course.CoursePic;
 import com.xuecheng.framework.domain.course.Teachplan;
 import com.xuecheng.framework.domain.course.ext.CourseInfo;
+import com.xuecheng.framework.domain.course.ext.CoursePublishResult;
+import com.xuecheng.framework.domain.course.ext.CourseView;
 import com.xuecheng.framework.domain.course.ext.TeachplanNode;
 import com.xuecheng.framework.domain.course.request.CourseListRequest;
 import com.xuecheng.framework.domain.course.response.AddCourseResult;
@@ -18,6 +22,7 @@ import com.xuecheng.framework.model.response.QueryResult;
 import com.xuecheng.framework.model.response.ResponseResult;
 import com.xuecheng.manage_course.base.CourseBaseService;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
@@ -32,6 +37,17 @@ public class CourseService extends CourseBaseService {
      */
     public TeachplanNode findTeachplanList(String courseId) {
         return teachplanMapper.findTeachplanList(courseId);
+    }
+
+    /**
+     * 删除课程计划
+     */
+    public ResponseResult deleteCoursePlan(String id) {
+        if (StringUtils.isBlank(id)) ExceptionCast.cast(CourseCode.COURSE_PUBLISH_COURSEIDISNULL);
+        List<Teachplan> list = teachplanRepository.findByParentid(id);
+        teachplanRepository.deleteAll(list);
+        teachplanRepository.deleteById(id);
+        return ResponseResult.SUCCESS();
     }
 
     /**
@@ -81,7 +97,8 @@ public class CourseService extends CourseBaseService {
             teachplan.setParentid("0");
             teachplan.setPname(courseBase.getName());
             teachplan.setGrade("1");
-            teachplan.setOrderby(1);
+            teachplan.setOrderby("1");
+            teachplan.setStatus("1");
             teachplan.setTrylearn("1");
             teachplanRepository.save(teachplan);
             return teachplan.getId();
@@ -184,6 +201,11 @@ public class CourseService extends CourseBaseService {
             ExceptionCast.cast(CourseCode.COURSE_PUBLISH_COURSEIDISNULL);
         if (StringUtils.isBlank(pic))
             ExceptionCast.cast(CourseCode.COURSE_PUBLISH_COURSEWITHPICISNULL);
+        List<CoursePic> list = coursePicRepository.findByCourseid(courseId);
+        if (list.size() > 0) {
+            ExceptionCast.cast(CourseCode.COURSE_PUBLISH_IMGISUNIQUE);
+            return ResponseResult.FAIL();
+        }
         CoursePic coursePic = new CoursePic();
         coursePic.setCourseid(courseId);
         coursePic.setPic(pic);
@@ -208,5 +230,69 @@ public class CourseService extends CourseBaseService {
         long res = coursePicRepository.deleteByPic(pic);
         if (res > 0) return ResponseResult.SUCCESS();
         return ResponseResult.FAIL();
+    }
+
+    /**
+     * 获取课程视图信息
+     */
+    public CourseView getCourseView(String courseId) {
+        CourseView courseView = new CourseView();
+        //获取课程视图需要的4个对象，如果不为空，就设置进去
+        Optional<CourseBase> courseBase = courseBaseRepository.findById(courseId);
+        courseBase.ifPresent(courseView::setCourseBase);
+        List<CoursePic> coursePics = findCoursePicsByCourseId(courseId);
+        Optional<CourseMarket> courseMarket = courseMarketRepository.findById(courseId);
+        courseMarket.ifPresent(courseView::setCourseMarket);
+        if (!CollectionUtils.isEmpty(coursePics))
+            courseView.setCoursePic(coursePics.get(0));
+        TeachplanNode teachplanNode = teachplanMapper.findTeachplanList(courseId);
+        if (teachplanNode != null)
+            courseView.setTeachplanNode(teachplanNode);
+        return courseView;
+    }
+
+    @Value("${course-publish.dataUrlPre}")
+    private String publish_dataUrlPre;
+    @Value("${course-publish.pagePhysicalPath}")
+    private String publish_page_physicalPath;
+    @Value("${course-publish.pageWebPath}")
+    private String publish_page_webPath;
+    @Value("${course-publish.siteId}")
+    private String publish_siteId;
+    @Value("${course-publish.templateId}")
+    private String publish_templateId;
+    @Value("${course-publish.previewUrl}")
+    private String previewUrl;
+
+    /**
+     * 页面预览
+     *
+     * @param id 课程ID
+     */
+    public CoursePublishResult preview(String id) {
+        if (StringUtils.isBlank(id)) ExceptionCast.cast(CourseCode.COURSE_PUBLISH_COURSEIDISNULL);
+        Optional<CourseBase> optional = courseBaseRepository.findById(id);
+        if (!optional.isPresent())
+            ExceptionCast.cast(CourseCode.COURSE_PUBLISH_COURSENOTFOUND);
+        CourseBase courseBase = optional.get();
+        //设置页面数据
+        CmsPage cmsPage = new CmsPage();
+        cmsPage.setTemplateId(publish_templateId);
+        cmsPage.setSiteId(publish_siteId);
+        cmsPage.setPageWebPath(publish_page_webPath);
+        cmsPage.setPagePhysicalPath(publish_page_physicalPath);
+        cmsPage.setPageName(id + ".html");
+        cmsPage.setPageAliase(courseBase.getName());
+        cmsPage.setDataUrl(publish_dataUrlPre + id);
+        //远程调用cms，执行保存
+        CmsPageResult result = cmsPageClient.saveOrUpdate(cmsPage);
+        if (!result.isSuccess()) {
+            return new CoursePublishResult(CommonCode.FAIL, null);
+        }
+        //获取保存后的页面信息
+        CmsPage page = result.getCmsPage();
+        //拼接预览URL
+        String url = previewUrl + page.getPageId();
+        return new CoursePublishResult(CommonCode.SUCCESS, url);
     }
 }
