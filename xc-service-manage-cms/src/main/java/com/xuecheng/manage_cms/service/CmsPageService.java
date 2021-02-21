@@ -9,6 +9,7 @@ import com.xuecheng.framework.domain.cms.CmsTemplate;
 import com.xuecheng.framework.domain.cms.request.QueryPageRequest;
 import com.xuecheng.framework.domain.cms.response.CmsCode;
 import com.xuecheng.framework.domain.cms.response.CmsPageResult;
+import com.xuecheng.framework.domain.course.response.CmsPostPageResult;
 import com.xuecheng.framework.exception.ExceptionCast;
 import com.xuecheng.framework.model.response.CommonCode;
 import com.xuecheng.framework.model.response.QueryResponseResult;
@@ -256,5 +257,28 @@ public class CmsPageService extends CmsBaseService {
             return update(page.getPageId(), cmsPage);
         }
         return save(cmsPage);
+    }
+
+    /**
+     * 一键发布页面，避免课程服务调用两次接口
+     */
+    public CmsPostPageResult postPageQuick(CmsPage cmsPage) {
+        if (cmsPage == null) ExceptionCast.cast(CmsCode.CMS_GENERATEHTML_HTMLNOTFOUND);
+        CmsPageResult update = saveOrUpdate(cmsPage);
+        if (!update.isSuccess()) {
+            return new CmsPostPageResult(CommonCode.FAIL, null);
+        }
+        CmsPage page = update.getCmsPage();
+        //发布页面
+        ResponseResult result = post(page.getPageId());
+        if (!result.isSuccess()) {
+            return new CmsPostPageResult(CommonCode.FAIL, null);
+        }
+        //拼装页面URL = 站点域名 + 站点访问路径 + 页面访问路径 + 页面名称
+        Optional<CmsSite> optional = cmsSiteRepository.findById(page.getSiteId());
+        if (!optional.isPresent()) ExceptionCast.cast(CmsCode.CMS_GENERATEHTML_SITENOTFOUND);
+        CmsSite cmsSite = optional.get();
+        String pageUrl = cmsSite.getSiteDomain() + cmsSite.getSiteWebPath() + page.getPageWebPath() + page.getPageName();
+        return new CmsPostPageResult(CommonCode.SUCCESS, pageUrl);
     }
 }

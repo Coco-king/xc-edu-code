@@ -1,10 +1,12 @@
 package com.xuecheng.api.course;
 
+import com.xuecheng.framework.domain.cms.CmsPage;
 import com.xuecheng.framework.domain.course.CourseBase;
 import com.xuecheng.framework.domain.course.CourseMarket;
 import com.xuecheng.framework.domain.course.CoursePic;
 import com.xuecheng.framework.domain.course.Teachplan;
-import com.xuecheng.framework.domain.course.ext.CoursePublishResult;
+import com.xuecheng.framework.domain.course.response.CmsPostPageResult;
+import com.xuecheng.framework.domain.course.response.CoursePublishResult;
 import com.xuecheng.framework.domain.course.ext.CourseView;
 import com.xuecheng.framework.domain.course.ext.TeachplanNode;
 import com.xuecheng.framework.domain.course.request.CourseListRequest;
@@ -15,6 +17,7 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
+import org.springframework.web.bind.annotation.PathVariable;
 
 import java.util.List;
 
@@ -86,4 +89,8 @@ public interface CourseControllerApi {
     @ApiOperation("预览课程")
     @ApiImplicitParam(name = "id", value = "课程ID", required = true, paramType = "path", dataType = "String")
     CoursePublishResult preview(String id);
+
+    @ApiOperation("发布课程")
+    @ApiImplicitParam(name = "id", value = "课程ID", required = true, paramType = "path", dataType = "String")
+    CoursePublishResult publish(@PathVariable String id);
 }

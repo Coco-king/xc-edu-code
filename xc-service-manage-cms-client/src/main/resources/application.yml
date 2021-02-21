@@ -15,7 +15,7 @@ spring:
     virtual-host: /
 xuecheng:
   mq:
-    queue: QUEUE_CMS_POSTPAGE_01 # 队列名称，如果有多个客户端，队列不能一样
+    queue: QUEUE_CMS_POSTPAGE_03 # 队列名称，如果有多个客户端，队列不能一样 01是预览页面 03是发布课程
     routingKey: 5a751fab6abb5044e0d19ea1 # 此为站点ID
 eureka:
   client:
